@@ -2,6 +2,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import MainLayout from "./pages/MainLayout";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
+import HeroSection from "./components/MainLayout/HeroSection";
+import Profile from "./components/MainLayout/Profile";
 
 const appRouter = createBrowserRouter([
   {
@@ -10,7 +12,11 @@ const appRouter = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: "HeroSection",
+        element: <HeroSection />,
+      },
+      {
+        path: "/profile",
+        element: <Profile />
       },
     ],
   },

@@ -113,15 +113,61 @@ export const login = async (req: Request, res: Response): Promise<any> => {
     }
 }
 
-export const logout = async (req: Request, res: Response): Promise<any> =>{
+export const logout = async (_: Request, res: Response): Promise<any> => {
     try {
 
         return res.clearCookie('token').status(200).json({
             success: true,
             message: "logged out successfully",
         });
-        
+
     } catch (error: any) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+}
+
+export const updateProfile = async (req: Request, res: Response): Promise<any> => {
+    try {
+
+        const userId = req.id;
+        const { fullName, email, contactNumber, address } = req.body;
+
+        if (!fullName || !email || !contactNumber || !address) {
+            return res.status(404).json({
+                success: false,
+                message: "Check all details",
+            });
+        }
+
+        const user = await User.findByIdAndUpdate(userId, {
+            fullName,
+            email,
+            contactNumber,
+            address
+        }, {
+            new: true
+        }).select("-password");
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "Some error occured while trying to find user",
+            });
+        }
+
+        user.save();
+
+        return res.status(201).json({
+            success: true,
+            message: "Profile updated",
+            user
+        });
+
+    } catch (error: any) {
+
         console.log(error);
         return res.status(500).json({
             success: false,
