@@ -1,10 +1,19 @@
-import { RegisterFormType } from "@/types/Forms";
+import { RegisterFormType } from "@/types/forms";
 import { useState } from "react";
 import { Label } from "../ui/label";
-import { Mail, PenBoxIcon, PenIcon, User2, UserPen } from "lucide-react";
+import {
+  Loader2,
+  Mail,
+  PenBoxIcon,
+  PenIcon,
+  User2,
+  UserPen,
+} from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import axios from "axios";
 
 const Form = () => {
   const [formData, setFormData] = useState<RegisterFormType>({
@@ -14,14 +23,42 @@ const Form = () => {
     contactNumber: 0,
     fullName: "",
   });
+  const [loading, setLoading] = useState<Boolean>(false);
+
+  const navigate = useNavigate();
 
   const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const loginHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const loginHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
+
+    try {
+      setLoading(true);
+
+      const res = await axios.post(
+        "http://localhost:8080/api/v1/user/register",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (res.data.success) {
+        navigate("/login", {
+          replace: true,
+        });
+        toast.success(res.data.message);
+      }
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -30,7 +67,7 @@ const Form = () => {
         Login
       </h2>
       <form onSubmit={(e) => loginHandler(e)} className="space-y-2 w-full">
-      <div>
+        <div>
           <Label htmlFor="fullName">Full Name</Label>
           <div className="relative">
             <User2 className="absolute top-1/2 left-0 -translate-y-1/2 translate-x-2" />
@@ -109,9 +146,15 @@ const Form = () => {
           </div>
         </div>
         <div>
-          <Button type="submit" className="w-full text-white">
-            Submit
-          </Button>
+          {loading ? (
+            <Button disabled type="submit" className="w-full text-white">
+              <Loader2 className="animate-spin" /> Please wait...
+            </Button>
+          ) : (
+            <Button type="submit" className="w-full text-white">
+              Submit
+            </Button>
+          )}
         </div>
       </form>
       <div className="w-full">
