@@ -112,3 +112,20 @@ export const login = async (req: Request, res: Response): Promise<any> => {
         });
     }
 }
+
+export const logout = async (req: Request, res: Response): Promise<any> =>{
+    try {
+
+        return res.clearCookie('token').status(200).json({
+            success: true,
+            message: "logged out successfully",
+        });
+        
+    } catch (error: any) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+}
