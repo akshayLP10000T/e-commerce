@@ -36,6 +36,10 @@ const userSchema = new mongoose.Schema<UserSchema>({
         type: Boolean,
         default: false,
     },
+    storeData: {
+        type: Object,
+        default: null,
+    },
 }, {
     timestamps: true
 });

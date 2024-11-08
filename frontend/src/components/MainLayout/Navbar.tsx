@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import {
+  Home,
   ListOrdered,
   Loader2,
   Search,
@@ -44,9 +45,9 @@ const Navbar = () => {
 
   return (
     <div className="w-full h-fit py-3 px-5 flex items-center justify-between">
-      <h3 className="text-2xl font-extrabold uppercase">
+      <Link to={"/"} className="text-2xl font-extrabold uppercase">
         Buyfrom<span className="text-primary dark:text-primary-dark">hell</span>
-      </h3>
+      </Link>
       <div className="gap-3 items-center justify-center hidden md:flex">
         <Link
           className="flex hover:text-black dark:hover:text-white"
@@ -94,6 +95,12 @@ const Navbar = () => {
               <SheetTitle className="mb-5">Menu</SheetTitle>
             </SheetHeader>
             <div className="gap-2 items-start justify-center md:hidden flex flex-col w-full">
+            <Link
+                className="flex hover:text-black dark:hover:text-white dark:hover:bg-gray-800 hover:bg-gray-200 w-full py-2 px-2 rounded-md"
+                to={"/"}
+              >
+                <Home /> Home
+              </Link>
               <Link
                 className="flex hover:text-black dark:hover:text-white dark:hover:bg-gray-800 hover:bg-gray-200 w-full py-2 px-2 rounded-md"
                 to={"/search"}

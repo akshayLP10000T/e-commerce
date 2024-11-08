@@ -3,6 +3,8 @@ import { User } from "../schema/user";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { StoreSchema } from "../types/store";
+import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -173,5 +175,91 @@ export const updateProfile = async (req: Request, res: Response): Promise<any> =
             success: false,
             message: "Internal server error",
         });
+    }
+}
+
+export const getUserData = async (req: Request, res: Response): Promise<any>=>{
+    try {
+
+        const userId = req.id;
+
+        const user = await User.findById(userId).select("-password");
+
+        if(!user){
+            return res.status(404).json({
+                success: false,
+                message: "Some error occured, Please login again",
+            });
+        }
+
+        return res.status(201).json({
+            success: true,
+            user,
+        });
+        
+    } catch (error: any) {
+
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+}
+
+export const applyForStore = async (req: Request, res: Response): Promise<any>=>{
+    try {
+
+        const { address, accountNumber, confirmAccountNumber, ifscCode, nameAccount } = req.body;
+        const userId = req.id;
+
+        if(!address || !accountNumber || !confirmAccountNumber || !ifscCode || !nameAccount){
+            return res.status(404).json({
+                success: false,
+                message: "Check all fields",
+            });
+        }
+
+        if(accountNumber !== confirmAccountNumber){
+            return res.status(401).json({
+                success: false,
+                message: "Account number doesn't match",
+            });
+        }
+
+        const storeData = {
+            address,
+            accountNumber,
+            ifscCode,
+            nameAccount
+        }
+
+        const user = await User.findByIdAndUpdate(userId, {
+            appliedForStore: true,
+            storeData,
+        }).select("-password");
+
+        if(!user){
+            return res.status(404).json({
+                success: false,
+                message: "Some Error occured, please try again later",
+            });
+        }
+
+        user.save();
+
+        return res.status(201).json({
+            success: true,
+            message: "Applied successfully, Please wait while we will process your details",
+        });
+        
+    } catch (error: any) {
+
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+
     }
 }

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { StoreSchema } from "./store";
 
 export interface UserSchema {
     fullName: string;
@@ -9,4 +10,5 @@ export interface UserSchema {
     store: mongoose.Schema.Types.ObjectId | null;
     appliedForStore: boolean;
     admin: boolean;
+    storeData: StoreSchema | null;
 }
