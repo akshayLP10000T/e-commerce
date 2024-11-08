@@ -4,6 +4,7 @@ import Login from "./auth/Login";
 import Register from "./auth/Register";
 import HeroSection from "./components/MainLayout/HeroSection";
 import Profile from "./components/MainLayout/Profile";
+import Stores from "./components/admin/Stores";
 
 const appRouter = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ const appRouter = createBrowserRouter([
       {
         path: "/profile",
         element: <Profile />
+      },
+      {
+        path: "/admin/stores",
+        element: <Stores />
       },
     ],
   },

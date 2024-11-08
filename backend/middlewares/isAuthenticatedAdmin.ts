@@ -4,33 +4,26 @@ import jwt from 'jsonwebtoken';
 declare global {
     namespace Express {
         interface Request {
-            id: string;
+            admin: boolean;
         }
     }
 }
 
-export const isAuthenticated = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+export const isAuthenticatedAdmin = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
 
         const { token } = req.cookies;
 
-        if (!token) {
-            return res.status(401).json({
-                success: false,
-                message: "User not authenticated",
-            });
-        }
-
         const decode = jwt.verify(token, process.env.SECRET_KEY!) as jwt.JwtPayload;
 
-        if (!decode) {
+        if(!decode.admin){
             return res.status(401).json({
                 success: false,
-                message: "Invalid user",
-            })
-        }
+                message: "You are not a admin",
+            });
+        };
 
-        req.id = decode.userId;
+        req.admin = decode.admin;
 
         next();
 

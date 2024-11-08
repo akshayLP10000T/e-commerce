@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import connectDB from "./database/connectDB";
 import userRoute from './routes/user';
+import adminRoute from './routes/admin';
 
 dotenv.config(); // Configuration of dotenv
 
@@ -24,6 +25,7 @@ app.use(cors(corsOption));
 
 // API's
 app.use("/api/v1/user", userRoute);
+app.use("/api/v1/admin", adminRoute);
 
 // Server listening
 app.listen(PORT, async ()=>{

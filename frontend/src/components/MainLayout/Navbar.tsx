@@ -7,6 +7,7 @@ import {
   Search,
   ShoppingCart,
   User2,
+  UserCheck2Icon,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -14,7 +15,21 @@ import axios from "axios";
 import { setUser } from "@/redux/userSlice";
 import { useState } from "react";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 const Navbar = () => {
   const { user } = useSelector((store: any) => store.user);
@@ -48,7 +63,22 @@ const Navbar = () => {
       <Link to={"/"} className="text-2xl font-extrabold uppercase">
         Buyfrom<span className="text-primary dark:text-primary-dark">hell</span>
       </Link>
-      <div className="gap-3 items-center justify-center hidden md:flex">
+      <div className="gap-3 items-center justify-center hidden lg:flex">
+        {user && user.admin && (
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex">
+              <UserCheck2Icon /> Admin Dashboard
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>Select</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <Link to={"/admin/stores"}>Stores</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>Users</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
         <Link
           className="flex hover:text-black dark:hover:text-white"
           to={"/search"}
@@ -85,7 +115,7 @@ const Navbar = () => {
             </Button>
           ))}
       </div>
-      <div className="md:hidden flex cursor-pointer text-lg w-fit h-fit p-2 rounded-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700">
+      <div className="lg:hidden flex cursor-pointer text-lg w-fit h-fit p-2 rounded-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700">
         <Sheet>
           <SheetTrigger>
             <HamburgerMenuIcon />
@@ -94,8 +124,8 @@ const Navbar = () => {
             <SheetHeader>
               <SheetTitle className="mb-5">Menu</SheetTitle>
             </SheetHeader>
-            <div className="gap-2 items-start justify-center md:hidden flex flex-col w-full">
-            <Link
+            <div className="gap-2 items-start justify-center lg:hidden flex flex-col w-full">
+              <Link
                 className="flex hover:text-black dark:hover:text-white dark:hover:bg-gray-800 hover:bg-gray-200 w-full py-2 px-2 rounded-md"
                 to={"/"}
               >

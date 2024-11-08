@@ -1,3 +1,10 @@
+interface storeData{
+    address: string;
+    accountNumber: number;
+    ifscCode: string;
+    nameAccount: string;
+}
+
 export interface User{
     _id: string;
     fullName: string;
@@ -8,4 +15,5 @@ export interface User{
     appliedForStore: boolean;
     store: string;
     admin: boolean;
+    storeData: storeData;
 }
