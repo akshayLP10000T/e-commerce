@@ -52,32 +52,26 @@ const Items = () => {
     gettingStoreData();
   }, []);
 
-  const itemsData: Partial<itemData>[] = [
-    {
-      name: "Backchodi h kya kar lega be sale mar ja na",
-      description:
-        "Bola na bakchodi kr rha phir bhi padh rha sale, abe ab to sharam kar le gandu kahe ko dekh rha h bhunike mar ja jake kam kar le jake bhag chaman aadmi",
-      image:
-        "https://png.pngtree.com/png-clipart/20220718/ourmid/pngtree-formal-mens-ultra-marine-blue-shirt-with-black-pant-free-png-png-image_6005524.png",
-      price: 10000,
-    },
-    {
-      name: "Backchodi h kya kar lega be sale mar ja na",
-      description:
-        "Bola na bakchodi kr rha phir bhi padh rha sale, abe ab to sharam kar le gandu kahe ko dekh rha h bhunike mar ja jake kam kar le jake bhag chaman aadmi",
-      image:
-        "https://png.pngtree.com/png-clipart/20220718/ourmid/pngtree-formal-mens-ultra-marine-blue-shirt-with-black-pant-free-png-png-image_6005524.png",
-      price: 10000,
-    },
-    {
-      name: "Backchodi h kya kar lega be sale",
-      description:
-        "Bola na bakchodi kr rha phir bhi padh rha sale, abe ab to sharam kar le gandu kahe ko dekh rha h bhunike mar ja jake kam kar le jake bhag chaman aadmi",
-      image:
-        "https://png.pngtree.com/png-clipart/20220718/ourmid/pngtree-formal-mens-ultra-marine-blue-shirt-with-black-pant-free-png-png-image_6005524.png",
-      price: 10000,
-    },
-  ];
+  useEffect(() => {
+    try {
+      const gettingAllItems = async () => {
+        const res = await axios.get(
+          "http://localhost:8080/api/v1/store/get-all-items",
+          {
+            withCredentials: true,
+          }
+        );
+
+        if (res.data.success) {
+          dispatch(setItemsData(res.data.items));
+        }
+      };
+
+      gettingAllItems();
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+    }
+  }, []);
 
   const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddItem({
@@ -103,7 +97,7 @@ const Items = () => {
 
     if (file) {
       setFile(file);
-      setAddItem({...addItem, imageFile: file});
+      setAddItem({ ...addItem, imageFile: file });
       await readFileAsDataUrl(file);
     }
   };
@@ -117,30 +111,31 @@ const Items = () => {
       formData.append("name", addItem.name!);
       formData.append("description", addItem.description!);
       formData.append("price", addItem.price!.toString());
-      
-      if(!addItem.imageFile){
+
+      if (!addItem.imageFile) {
         toast.error("Image file is required");
-      }
-      else{
+      } else {
         formData.append("image", addItem.imageFile!);
 
-        const res = await axios.post("http://localhost:8080/api/v1/store/add-item", formData, {
-          headers:{
-            'Content-Type': 'multipart/form-data',
-          },
-          withCredentials: true,
-        });
+        const res = await axios.post(
+          "http://localhost:8080/api/v1/store/add-item",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+            withCredentials: true,
+          }
+        );
 
-        if(res.data.success){
+        if (res.data.success) {
           dispatch(setItemsData([res.data.item, ...itemData]));
           toast.success(res.data.message);
         }
       }
-      
     } catch (error: any) {
       toast.error(error?.response?.data?.message);
-    }
-    finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -234,34 +229,36 @@ const Items = () => {
         </Dialog>
       </div>
 
-      {storeData?.items?.length === 0 && (
+      {storeData?.items?.length !== 0 && (
         <div>
           <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-5 mt-5">
-            {itemsData.map((item: Partial<itemData>, idx: number) => (
+            {itemData.map((item: Partial<itemData>, idx: number) => (
               <Card
                 key={idx}
-                className="shadow-md hover:shadow-xl duration-200 transition-shadow"
+                className="shadow-md hover:shadow-xl duration-200 transition-shadow h-full flex flex-col justify-between"
               >
                 <CardHeader>
                   <img
-                    className="w-full rounded-lg max-h-60 object-cover object-center"
+                    className="w-full rounded-lg h-60 object-cover object-center"
                     src={item.image}
                     alt="img"
                   />
                 </CardHeader>
-                <CardContent>
-                  <CardTitle>{item.name}</CardTitle>
-                  <CardDescription>{item.description}</CardDescription>
-                  <p className="mt-5">
-                    <span className="font-bold">Amount:-</span> {item.price}
-                  </p>
-                </CardContent>
-                <CardFooter className="w-full grid grid-cols-2 gap-5">
-                  <Button variant={"outline"} className="text-red-600">
-                    Delete
-                  </Button>
-                  <Button className="text-white">Edit</Button>
-                </CardFooter>
+                <div>
+                  <CardContent>
+                    <CardTitle>{item.name}</CardTitle>
+                    <CardDescription>{item.description}</CardDescription>
+                    <p className="mt-5">
+                      <span className="font-bold">Amount:-</span> {item.price}
+                    </p>
+                  </CardContent>
+                  <CardFooter className="w-full grid grid-cols-2 gap-5">
+                    <Button variant={"outline"} className="text-red-600">
+                      Delete
+                    </Button>
+                    <Button className="text-white">Edit</Button>
+                  </CardFooter>
+                </div>
               </Card>
             ))}
           </div>
