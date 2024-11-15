@@ -6,6 +6,7 @@ import cors from 'cors';
 import connectDB from "./database/connectDB";
 import userRoute from './routes/user';
 import adminRoute from './routes/admin';
+import storeRoute from './routes/store';
 
 dotenv.config(); // Configuration of dotenv
 
@@ -26,6 +27,7 @@ app.use(cors(corsOption));
 // API's
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/admin", adminRoute);
+app.use("/api/v1/store", storeRoute)
 
 // Server listening
 app.listen(PORT, async ()=>{

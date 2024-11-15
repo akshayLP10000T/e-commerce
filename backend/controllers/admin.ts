@@ -47,7 +47,7 @@ export const giveStoreAccess = async (req: Request, res: Response): Promise<any>
 
         const updatedUser = await User.findByIdAndUpdate(id, { appliedForStore: false, store: store._id });
 
-        updatedUser?.save();
+        await updatedUser?.save();
 
         return res.status(201).json({
             success: true,

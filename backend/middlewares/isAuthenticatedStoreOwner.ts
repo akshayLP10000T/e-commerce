@@ -2,8 +2,9 @@ import { Response, Request, NextFunction } from "express";
 import jwt from 'jsonwebtoken';
 import { User } from "../schema/user";
 
-export const isAuthenticatedAdmin = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+export const isAuthenticatedStoreOwner = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     try {
+
         const { token } = req.cookies;
 
         if (!token) {
@@ -24,15 +25,14 @@ export const isAuthenticatedAdmin = async (req: Request, res: Response, next: Ne
 
         req.id = decode.userId;
 
-        const user = await User.findById(req.id).select("admin");
+        const user = await User.findById(req.id).select("store");
 
-        if(!user?.admin){
+        if(!user?.store){
             return res.status(401).json({
                 success: false,
-                message: "You are not a admin",
+                message: "You are not a store owner",
             });
         }
-
         next();
 
     } catch (error) {

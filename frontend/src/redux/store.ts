@@ -11,6 +11,7 @@ import {
 import storage from 'redux-persist/lib/storage'
 import userSlice from './userSlice';
 import adminSlice from './adminSlice';
+import storeSlice from './storeSlice';
 
 //User for persist store
 const persistConfig = {
@@ -23,6 +24,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
     user: userSlice,
     admin: adminSlice,
+    store: storeSlice,
 });
 
 //Persisting store

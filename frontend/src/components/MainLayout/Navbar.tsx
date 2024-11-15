@@ -30,6 +30,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { Separator } from "../ui/separator";
+import { Label } from "../ui/label";
+import { setStoreData } from "@/redux/storeSlice";
+import { setStoreRequest } from "@/redux/adminSlice";
 
 const Navbar = () => {
   const { user } = useSelector((store: any) => store.user);
@@ -46,6 +50,8 @@ const Navbar = () => {
 
       if (res.data.success) {
         dispatch(setUser(null));
+        dispatch(setStoreData(null));
+        dispatch(setStoreRequest(null));
         navigate("/login", {
           replace: true,
         });
@@ -76,6 +82,22 @@ const Navbar = () => {
                 <Link to={"/admin/stores"}>Stores</Link>
               </DropdownMenuItem>
               <DropdownMenuItem>Users</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
+        {user && user.store && (
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex">
+              <ShoppingCart /> Store Dashboard
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>Select</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <Link to={"/store/items"}>Items</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>Orders</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )}
@@ -156,16 +178,61 @@ const Navbar = () => {
               >
                 <User2 /> {user ? user.fullName : "Login"}
               </Link>
-              {user &&
-                (loading ? (
-                  <Button disabled className="text-white w-full">
-                    <Loader2 className="animate-spin" /> Please Wait...
-                  </Button>
-                ) : (
-                  <Button onClick={logoutHandler} className="text-white w-full">
-                    Logout
-                  </Button>
-                ))}
+              <Separator className="my-2" />
+              <Label>Admin</Label>
+
+              {user?.admin && (
+                <div className="w-full">
+                  <Link
+                    className="flex hover:text-black dark:hover:text-white dark:hover:bg-gray-800 hover:bg-gray-200 w-full py-2 px-2 rounded-md"
+                    to={"/admin/stores"}
+                  >
+                    <UserCheck2Icon /> Stores
+                  </Link>
+                  <Link
+                    className="flex hover:text-black dark:hover:text-white dark:hover:bg-gray-800 hover:bg-gray-200 w-full py-2 px-2 rounded-md"
+                    to={"/admin/users"}
+                  >
+                    <UserCheck2Icon /> Users
+                  </Link>
+                </div>
+              )}
+
+              <Separator className="my-2" />
+              <Label>Store</Label>
+
+              {user?.store && (
+                <div className="w-full">
+                  <Link
+                    className="flex hover:text-black dark:hover:text-white dark:hover:bg-gray-800 hover:bg-gray-200 w-full py-2 px-2 rounded-md"
+                    to={"/store/items"}
+                  >
+                    <ShoppingCart /> Items
+                  </Link>
+                  <Link
+                    className="flex hover:text-black dark:hover:text-white dark:hover:bg-gray-800 hover:bg-gray-200 w-full py-2 px-2 rounded-md"
+                    to={"/store/orders"}
+                  >
+                    <ShoppingCart /> Orders
+                  </Link>
+                </div>
+              )}
+
+              <div className="w-full">
+                {user &&
+                  (loading ? (
+                    <Button disabled className="text-white w-full">
+                      <Loader2 className="animate-spin" /> Please Wait...
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={logoutHandler}
+                      className="text-white w-full"
+                    >
+                      Logout
+                    </Button>
+                  ))}
+              </div>
             </div>
           </SheetContent>
         </Sheet>

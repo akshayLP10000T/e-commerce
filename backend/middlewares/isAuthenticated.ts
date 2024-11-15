@@ -1,10 +1,11 @@
 import { Response, Request, NextFunction } from "express";
 import jwt from 'jsonwebtoken';
+import mongoose from "mongoose";
 
 declare global {
     namespace Express {
         interface Request {
-            id: string;
+            id: mongoose.Schema.Types.ObjectId;
         }
     }
 }

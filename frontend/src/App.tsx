@@ -5,6 +5,7 @@ import Register from "./auth/Register";
 import HeroSection from "./components/MainLayout/HeroSection";
 import Profile from "./components/MainLayout/Profile";
 import Stores from "./components/admin/Stores";
+import Items from "./components/store/Items";
 
 const appRouter = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const appRouter = createBrowserRouter([
       {
         path: "/admin/stores",
         element: <Stores />
+      },
+      {
+        path: "/store/items",
+        element: <Items />
       },
     ],
   },

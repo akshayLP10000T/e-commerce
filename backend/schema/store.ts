@@ -28,8 +28,8 @@ const storeSchema = new mongoose.Schema<StoreSchema>({
     items: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Item",
-        },
+            ref: "Item"
+        }
     ]
 }, {
     timestamps: true

@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 
-export interface StoreSchema {
+export interface StoreSchema extends Document {
     address: string;
     accountNumber: number;
     ifscCode: string;

@@ -3,8 +3,6 @@ import { User } from "../schema/user";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { StoreSchema } from "../types/store";
-import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -91,8 +89,6 @@ export const login = async (req: Request, res: Response): Promise<any> => {
 
         const token = jwt.sign({
             userId: user._id,
-            admin: user.admin,
-            store: user.store,
         }, process.env.SECRET_KEY!, {
             expiresIn: '3d'
         });
@@ -162,7 +158,7 @@ export const updateProfile = async (req: Request, res: Response): Promise<any> =
             });
         }
 
-        user.save();
+        await user.save();
 
         return res.status(201).json({
             success: true,
@@ -248,7 +244,7 @@ export const applyForStore = async (req: Request, res: Response): Promise<any>=>
             });
         }
 
-        user.save();
+        await user.save();
 
         return res.status(201).json({
             success: true,
