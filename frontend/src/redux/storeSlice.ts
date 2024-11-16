@@ -4,6 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     storeData: null,
     itemData: [],
+    selectedItem: null,
 };
 
 // Creating the slice
@@ -17,10 +18,13 @@ const storeSlice = createSlice({
         },
         setItemsData: (state, action)=>{
             state.itemData = action.payload;
+        },
+        setSelectedItem: (state, action)=>{
+            state.itemData = action.payload;
         }
     },
 });
 
 // Exporting actions and userSlice reducer for storing
-export const { setStoreData, setItemsData } = storeSlice.actions;
+export const { setStoreData, setItemsData, setSelectedItem } = storeSlice.actions;
 export default storeSlice.reducer;

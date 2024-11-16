@@ -20,7 +20,7 @@ export const getStoreData = async (req: Request, res: Response): Promise<any> =>
             });
         }
 
-        const storeData = await Store.findById(user.store);
+        const storeData = await Store.findById(user.store).select("-items");
 
         if (!storeData) {
             return res.status(202).json({
@@ -120,16 +120,51 @@ export const addItem = async (req: Request, res: Response): Promise<any> => {
 
         await storeData.save();
 
+        const itemData = Item.findById(item._id).select("-owner");
+
         return res.status(201).json({
             success: true,
             message: "Item Added successfully",
-            item
+            item: itemData,
         });
 
     } catch (error: any) {
 
         console.log(error);
         res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+}
+
+export const getAllItems = async (req: Request, res: Response): Promise<any> =>{
+    try {
+
+        const userId = req.id;
+        const user = await User.findById(userId).select("store");
+        const storeData = await Store.findById(user?.store).select("items");
+
+        let items: any[] = [];
+
+        if (storeData?.items?.length) {
+            items = await Promise.all(
+                storeData.items.map(async (item: any) => {
+                    const itemData = await Item.findById(item).select("-owner");
+                    return itemData;
+                })
+            );
+        }
+
+        return res.status(200).json({
+            success: true,
+            items,
+        });
+        
+    } catch (error: any) {
+
+        console.log(error);
+        return res.status(500).json({
             success: false,
             message: "Internal server error",
         });

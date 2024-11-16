@@ -1,6 +1,6 @@
-import { setItemsData, setStoreData } from "@/redux/storeSlice";
+import { setItemsData } from "@/redux/storeSlice";
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import {
@@ -29,49 +29,6 @@ import { readFileAsDataUrl } from "@/lib/utils";
 const Items = () => {
   const dispatch = useDispatch();
   const { storeData, itemData } = useSelector((store: any) => store.store);
-
-  useEffect(() => {
-    const gettingStoreData = async () => {
-      try {
-        const res = await axios.get(
-          "http://localhost:8080/api/v1/store/get-store-data",
-          {
-            withCredentials: true,
-          }
-        );
-
-        if (res.data.success) {
-          dispatch(setStoreData(res.data.storeData));
-        }
-      } catch (error: any) {
-        console.log(error);
-        toast.error(error.response.data.message);
-      }
-    };
-
-    gettingStoreData();
-  }, []);
-
-  useEffect(() => {
-    try {
-      const gettingAllItems = async () => {
-        const res = await axios.get(
-          "http://localhost:8080/api/v1/store/get-all-items",
-          {
-            withCredentials: true,
-          }
-        );
-
-        if (res.data.success) {
-          dispatch(setItemsData(res.data.items));
-        }
-      };
-
-      gettingAllItems();
-    } catch (error: any) {
-      toast.error(error.response.data.message);
-    }
-  }, []);
 
   const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddItem({
@@ -232,30 +189,44 @@ const Items = () => {
       {storeData?.items?.length !== 0 && (
         <div>
           <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-5 mt-5">
-            {itemData.map((item: Partial<itemData>, idx: number) => (
+            {itemData.map((item: any) => (
               <Card
-                key={idx}
+                key={item?._id}
                 className="shadow-md hover:shadow-xl duration-200 transition-shadow h-full flex flex-col justify-between"
               >
                 <CardHeader>
                   <img
                     className="w-full rounded-lg h-60 object-cover object-center"
-                    src={item.image}
+                    src={item?.image}
                     alt="img"
                   />
                 </CardHeader>
                 <div>
                   <CardContent>
-                    <CardTitle>{item.name}</CardTitle>
-                    <CardDescription>{item.description}</CardDescription>
+                    <CardTitle>{item?.name}</CardTitle>
+                    <CardDescription>{item?.description}</CardDescription>
                     <p className="mt-5">
-                      <span className="font-bold">Amount:-</span> {item.price}
+                      <span className="font-bold">Amount:-</span> {item?.price}
                     </p>
                   </CardContent>
                   <CardFooter className="w-full grid grid-cols-2 gap-5">
-                    <Button variant={"outline"} className="text-red-600">
-                      Delete
-                    </Button>
+                    <Dialog >
+                      <DialogTrigger>
+                        <Button variant={"outline"} className="text-red-600 w-full">
+                          Delete
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>
+                            Are you shure to delete following item
+                          </DialogTitle>
+                          <DialogDescription>
+                            Check the item and confirm to delete the item
+                          </DialogDescription>
+                        </DialogHeader>
+                      </DialogContent>
+                    </Dialog>
                     <Button className="text-white">Edit</Button>
                   </CardFooter>
                 </div>
