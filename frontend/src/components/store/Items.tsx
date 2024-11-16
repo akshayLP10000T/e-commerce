@@ -1,6 +1,6 @@
 import { setItemsData, setSelectedItem } from "@/redux/storeSlice";
 import axios from "axios";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import {
@@ -44,7 +44,9 @@ const Items = () => {
 
   const [loading, setLoading] = useState<boolean>(false);
   const imageRef = useRef(null);
+  const imageRefUpdate = useRef(null);
   const [file, setFile] = useState<any>(null);
+  const [fileUpdate, setFileUpdate] = useState<any>(null);
 
   const [addItem, setAddItem] = useState<Partial<itemData>>({
     name: "",
@@ -53,12 +55,41 @@ const Items = () => {
     price: 0,
   });
 
+  const [updateItem, setUpdateItem] = useState<Partial<itemData>>({
+    name: selectedItem?.name,
+    description: selectedItem?.description,
+    imageFile: fileUpdate,
+    price: selectedItem?.price,
+  });
+
+  const inputChangeHandlerUpdateDialog = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setUpdateItem({
+      ...updateItem,
+      [e.target.name]:
+        e.target.type === "number" ? Number(e.target.value) : e.target.value,
+    });
+  };
+
   const fileChangeHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (file) {
       setFile(file);
       setAddItem({ ...addItem, imageFile: file });
+      await readFileAsDataUrl(file);
+    }
+  };
+
+  const fileChangeHandlerUpdate = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      setFileUpdate(file);
+      setUpdateItem({ ...updateItem, imageFile: file });
       await readFileAsDataUrl(file);
     }
   };
@@ -120,6 +151,46 @@ const Items = () => {
       }
     } catch (error: any) {
       toast.error(error.response.data.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateHandler = async (
+    e: React.FormEvent<HTMLFormElement>,
+    id: string
+  ) => {
+    e.preventDefault();
+
+    setLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("name", updateItem.name!);
+      formData.append("description", updateItem.description!);
+      formData.append("price", updateItem.price!.toString());
+
+      if (updateItem.imageFile) {
+        formData.append("image", updateItem.imageFile!);
+      }
+      const res = await axios.put(
+        `http://localhost:8080/api/v1/store/update/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (res.data.success) {
+        gettingAllItems(dispatch);
+        setSelectedItem(null);
+        toast.success(res.data.message);
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -280,7 +351,101 @@ const Items = () => {
                         </div>
                       </DialogContent>
                     </Dialog>
-                    <Button className="text-white">Edit</Button>
+                    <Dialog>
+                      <DialogTrigger>
+                        <Button
+                          className="text-white w-full"
+                          onClick={() => dispatch(setSelectedItem(item))}
+                        >
+                          Edit
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Change details</DialogTitle>
+                          <DialogDescription>
+                            Check all details of item and update it.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <form
+                          className="space-y-2 w-full"
+                          onSubmit={(e) => updateHandler(e, selectedItem._id)}
+                        >
+                          <div>
+                            <Label htmlFor="name">Name</Label>
+                            <div className="relative">
+                              <Input
+                                name="name"
+                                onChange={(e) => {
+                                  inputChangeHandlerUpdateDialog(e);
+                                }}
+                                value={updateItem.name}
+                                placeholder="Item Name"
+                              ></Input>
+                            </div>
+                          </div>
+                          <div className="relative">
+                            <Label htmlFor="description">Description</Label>
+                            <Input
+                              name="description"
+                              onChange={(e) => {
+                                inputChangeHandlerUpdateDialog(e);
+                              }}
+                              type="text"
+                              value={updateItem.description}
+                              placeholder="Description"
+                            ></Input>
+                          </div>
+                          <div className="relative">
+                            <Label htmlFor="price">Price</Label>
+                            <Input
+                              name="price"
+                              onChange={(e) => {
+                                inputChangeHandlerUpdateDialog(e);
+                              }}
+                              type="number"
+                              value={updateItem.price}
+                              placeholder="Price"
+                            ></Input>
+                          </div>
+                          <div className="relative">
+                            <Label htmlFor="image">
+                              <div className="text-white w-full h-dit bg-primary text-center py-3 rounded-lg">
+                                {fileUpdate ? "Image Selected" : "Select Image"}
+                              </div>
+                            </Label>
+                            <Input
+                              onChange={fileChangeHandlerUpdate}
+                              accept="image/*"
+                              type="file"
+                              name="image"
+                              id="image"
+                              ref={imageRefUpdate}
+                              className="hidden"
+                            />
+                          </div>
+                          <div>
+                            {loading ? (
+                              <Button
+                                disabled
+                                type="submit"
+                                className="w-full text-white"
+                              >
+                                <Loader2 className="animate-spin" /> Please
+                                wait...
+                              </Button>
+                            ) : (
+                              <Button
+                                type="submit"
+                                className="w-full text-white"
+                              >
+                                Update
+                              </Button>
+                            )}
+                          </div>
+                        </form>
+                      </DialogContent>
+                    </Dialog>
                   </CardFooter>
                 </div>
               </Card>

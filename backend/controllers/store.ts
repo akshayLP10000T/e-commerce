@@ -203,5 +203,58 @@ export const deleteItem = async (req: Request, res: Response): Promise<any> =>{
 }
 
 export const updateItem = async (req: Request, res: Response): Promise<any> =>{
-    
+    try {
+        const { id } = req.params;
+        const { name, price, description } = req.body;
+        const image = req.file;
+        let item;
+
+        if(!name || !price || !description){
+            return res.status(404).json({
+                success: false,
+                message: "Fill all details",
+            });
+        }
+
+        if(image){
+            const optimizedImageBuffer = await sharp(image.buffer).resize({
+                width: 800,
+                height: 800,
+                fit: "inside",
+            }).toFormat('jpeg', {
+                quality: 80,
+            }).toBuffer();
+            const fileUri = `data:image/jpeg;base64,${optimizedImageBuffer.toString('base64')}`;
+            const cloudResponse = await cloudinary.uploader.upload(fileUri);
+            item = await Item.findByIdAndUpdate(id, {
+                name,
+                price,
+                description,
+                image: cloudResponse.secure_url,
+            });
+        }
+        else{
+            item = await Item.findByIdAndUpdate(id, {
+                name,
+                price,
+                description,
+            });
+        }
+
+
+        item?.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Item updated successfully",
+        });
+        
+    } catch (error: any) {
+
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
 }
