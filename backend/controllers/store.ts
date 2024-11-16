@@ -201,3 +201,7 @@ export const deleteItem = async (req: Request, res: Response): Promise<any> =>{
         });
     }
 }
+
+export const updateItem = async (req: Request, res: Response): Promise<any> =>{
+    
+}

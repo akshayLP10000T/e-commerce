@@ -25,6 +25,8 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Loader2 } from "lucide-react";
 import { readFileAsDataUrl } from "@/lib/utils";
+import { gettingAllItems } from "@/hooks/useGetAllItems";
+import { gettingStoreData } from "@/hooks/useGetStoreData";
 
 const Items = () => {
   const dispatch = useDispatch();
@@ -112,6 +114,8 @@ const Items = () => {
 
       if (res.data.success) {
         dispatch(setSelectedItem(null));
+        gettingAllItems(dispatch);
+        gettingStoreData(dispatch);
         toast.success(res.data.message);
       }
     } catch (error: any) {

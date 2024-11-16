@@ -17,7 +17,7 @@ const storeSlice = createSlice({
             state.storeData = action.payload;
         },
         setItemsData: (state, action) => {
-            state.itemData = action.payload;
+            state.itemData = action.payload.filter((item: any)=>item!=null);
         },
         setSelectedItem: (state, action) => {
             state.selectedItem = action.payload;
