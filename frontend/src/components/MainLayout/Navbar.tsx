@@ -32,7 +32,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Separator } from "../ui/separator";
 import { Label } from "../ui/label";
-import { setItemsData, setStoreData } from "@/redux/storeSlice";
+import { setItemsData, setSelectedItem, setStoreData } from "@/redux/storeSlice";
 import { setStoreRequest } from "@/redux/adminSlice";
 
 const Navbar = () => {
@@ -53,6 +53,7 @@ const Navbar = () => {
         dispatch(setStoreData(null));
         dispatch(setStoreRequest(null));
         dispatch(setItemsData(null));
+        dispatch(setSelectedItem(null));
         navigate("/login", {
           replace: true,
         });

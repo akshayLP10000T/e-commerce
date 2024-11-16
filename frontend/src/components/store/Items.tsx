@@ -1,4 +1,4 @@
-import { setItemsData } from "@/redux/storeSlice";
+import { setItemsData, setSelectedItem } from "@/redux/storeSlice";
 import axios from "axios";
 import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -28,7 +28,9 @@ import { readFileAsDataUrl } from "@/lib/utils";
 
 const Items = () => {
   const dispatch = useDispatch();
-  const { storeData, itemData } = useSelector((store: any) => store.store);
+  const { storeData, itemData, selectedItem } = useSelector(
+    (store: any) => store.store
+  );
 
   const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddItem({
@@ -92,6 +94,28 @@ const Items = () => {
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteHandler = async (id: string) => {
+    try {
+      setLoading(true);
+
+      const res = await axios.get(
+        `http://localhost:8080/api/v1/store/delete/${id}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (res.data.success) {
+        dispatch(setSelectedItem(null));
+        toast.success(res.data.message);
+      }
+    } catch (error: any) {
+      toast.error(error.response.data.message);
     } finally {
       setLoading(false);
     }
@@ -210,9 +234,13 @@ const Items = () => {
                     </p>
                   </CardContent>
                   <CardFooter className="w-full grid grid-cols-2 gap-5">
-                    <Dialog >
+                    <Dialog>
                       <DialogTrigger>
-                        <Button variant={"outline"} className="text-red-600 w-full">
+                        <Button
+                          variant={"outline"}
+                          className="text-red-600 w-full"
+                          onClick={() => dispatch(setSelectedItem(item))}
+                        >
                           Delete
                         </Button>
                       </DialogTrigger>
@@ -225,6 +253,27 @@ const Items = () => {
                             Check the item and confirm to delete the item
                           </DialogDescription>
                         </DialogHeader>
+                        <img src={selectedItem?.image} alt="img" />
+                        <div className="w-full flex justify-between gap-10">
+                          {loading ? (
+                            <Button
+                              disabled
+                              className="w-full"
+                              variant={"outline"}
+                            >
+                              <Loader2 className="animate-spin" /> Please
+                              wait...
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={() => deleteHandler(selectedItem._id)}
+                              className="w-full"
+                              variant={"outline"}
+                            >
+                              Yes
+                            </Button>
+                          )}
+                        </div>
                       </DialogContent>
                     </Dialog>
                     <Button className="text-white">Edit</Button>

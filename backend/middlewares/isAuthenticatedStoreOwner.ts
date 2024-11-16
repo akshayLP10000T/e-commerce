@@ -10,7 +10,7 @@ export const isAuthenticatedStoreOwner = async (req: Request, res: Response, nex
         if (!token) {
             return res.status(401).json({
                 success: false,
-                message: "User not authenticated",
+                message: "User not authenticated, please try to relogin",
             });
         }
 

@@ -49,7 +49,7 @@ const App = () => {
   const dispatch = useDispatch();
   const {user} = useSelector((store: any)=> store.user);
 
-  if(user.store){
+  if(user?.store){
     
     useEffect(() => {
       const gettingStoreData = async () => {
